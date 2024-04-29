@@ -1,4 +1,3 @@
-using System.Text;
 using ecomove_back.Data;
 using ecomove_back.Data.Models;
 using ecomove_back.DTOs.AdressDTOs;
@@ -59,7 +58,6 @@ namespace ecomove_back.Repositories
                     IsSuccess = true,
                     CodeStatus = 201,
                 };
-
             }
             catch (Exception ex)
             {
@@ -162,14 +160,102 @@ namespace ecomove_back.Repositories
             }
         }
 
-        public Task<Response<CarpoolAddressDTO>> GetCarpoolAddressByIdAsync(Guid id)
+        public async Task<Response<CarpoolAddressOutGoingDTO>> GetCarpoolAddressByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                CarpoolAddress? carpoolAddress = await _ecoMoveDbContext.CarpoolAddresses.FindAsync(id);
+
+                if (carpoolAddress is null)
+                    return new Response<CarpoolAddressOutGoingDTO>
+                    {
+                        Data = null,
+                        IsSuccess = false,
+                        CodeStatus = 404,
+                        Message = "Aucune addresse n'a été trouvée"
+                    };
+
+                return new Response<CarpoolAddressOutGoingDTO>
+                {
+                    Data = new CarpoolAddressOutGoingDTO { Address = carpoolAddress.Address, Latitude = carpoolAddress.Latitude, Longitude = carpoolAddress.Longitude },
+                    IsSuccess = true,
+                    CodeStatus = 200,
+                    Message = null
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<CarpoolAddressOutGoingDTO>
+                {
+                    Data = null,
+                    IsSuccess = false,
+                    CodeStatus = 500,
+                    Message = ex.Message
+                };
+            }
         }
 
-        public Task<Response<CarpoolAddressDTO>> UpdateCarpoolAddressAsync(Guid id, CarpoolAddressDTO carpoolAddressDTO)
+        public async Task<Response<CarpoolAddressOutGoingDTO>> UpdateCarpoolAddressAsync(Guid id, CarpoolAddressDTO carpoolAddressDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                CarpoolAddress? carpoolAddress = await _ecoMoveDbContext.CarpoolAddresses.FindAsync(id);
+
+                if (carpoolAddress is null)
+                    return new Response<CarpoolAddressOutGoingDTO>
+                    {
+                        Data = null,
+                        IsSuccess = false,
+                        CodeStatus = 404,
+                        Message = "Aucune addresse n'a été trouvée"
+                    };
+
+                HttpResponseMessage? response = await _openStreetMapRequest.GetAdress(carpoolAddressDTO);
+
+                List<AddressJsonModel>? content = await response!.Content.ReadFromJsonAsync<List<AddressJsonModel>>();
+
+                AddressJsonModel? address = content!.Count > 0 ? content[0] : null;
+
+                if (address is null)
+                    return new Response<CarpoolAddressOutGoingDTO>
+                    {
+                        Message = "Aucune addresse n'a été trouvée",
+                        IsSuccess = false,
+                        Data = null,
+                        CodeStatus = 500,
+                    };
+
+                // Better to verify is the address is not used by a carpool / rental vehicle before allowing update
+
+                carpoolAddress.Address = address!.display_name;
+                carpoolAddress.Latitude = address.lat;
+                carpoolAddress.Longitude = address.lon;
+
+                await _ecoMoveDbContext.SaveChangesAsync();
+
+                return new Response<CarpoolAddressOutGoingDTO>
+                {
+                    Message = "L'adresse a bien été mise à jour",
+                    Data = new CarpoolAddressOutGoingDTO
+                    {
+                        Address = carpoolAddress.Address,
+                        Latitude = carpoolAddress.Latitude,
+                        Longitude = carpoolAddress.Longitude
+                    },
+                    IsSuccess = true,
+                    CodeStatus = 201,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<CarpoolAddressOutGoingDTO>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    IsSuccess = false,
+                    CodeStatus = 500,
+                };
+            }
         }
     }
 }

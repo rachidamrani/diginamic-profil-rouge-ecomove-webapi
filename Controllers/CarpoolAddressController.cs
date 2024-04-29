@@ -76,7 +76,7 @@ namespace ecomove_back.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCarpoolAddressById(Guid id)
         {
-            Response<CarpoolAddressDTO> response = await _carpoolAddressRepository.GetCarpoolAddressByIdAsync(id);
+            Response<CarpoolAddressOutGoingDTO> response = await _carpoolAddressRepository.GetCarpoolAddressByIdAsync(id);
 
             if (response.IsSuccess)
                 return Ok(response);
@@ -94,7 +94,7 @@ namespace ecomove_back.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCarpoolAddressAsync(Guid id, CarpoolAddressDTO carpoolAddressDTO)
         {
-            Response<CarpoolAddressDTO> response = await _carpoolAddressRepository.UpdateCarpoolAddressAsync(id, carpoolAddressDTO);
+            Response<CarpoolAddressOutGoingDTO> response = await _carpoolAddressRepository.UpdateCarpoolAddressAsync(id, carpoolAddressDTO);
 
             if (response.IsSuccess)
                 return Ok(response);

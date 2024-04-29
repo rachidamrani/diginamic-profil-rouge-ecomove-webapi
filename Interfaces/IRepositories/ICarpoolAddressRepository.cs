@@ -8,8 +8,8 @@ namespace ecomove_back.Interfaces.IRepositories
     {
         Task<Response<CarpoolAddressOutGoingDTO>> CreateCarpoolAddressAsync(CarpoolAddressDTO carpoolAddressDTO);
         Task<Response<List<CarpoolAddressOutGoingDTO>>> GetAllCarpoolAddressesAsync();
-        Task<Response<CarpoolAddressDTO>> GetCarpoolAddressByIdAsync(Guid id);
-        Task<Response<CarpoolAddressDTO>> UpdateCarpoolAddressAsync(Guid id, CarpoolAddressDTO carpoolAddressDTO);
+        Task<Response<CarpoolAddressOutGoingDTO>> GetCarpoolAddressByIdAsync(Guid id);
+        Task<Response<CarpoolAddressOutGoingDTO>> UpdateCarpoolAddressAsync(Guid id, CarpoolAddressDTO carpoolAddressDTO);
         Task<Response<CarpoolAddressDTO>> DeleteCarpoolAddressAsync(Guid id);
 
     }
