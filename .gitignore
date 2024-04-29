@@ -7,7 +7,7 @@
 .env
 
 appsettings.json
-Migrations
+/Migrations
 
 # User-specific files
 *.rsuser
