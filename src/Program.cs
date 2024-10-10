@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 using Ecomove.Api.Data;
 using Ecomove.Api.Data.Fixtures;
@@ -11,8 +12,10 @@ using Ecomove.Api.Services.Models;
 using Ecomove.Api.Services.Motorizations;
 using Ecomove.Api.Services.RentalVehicles;
 using Ecomove.Api.Services.UserService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
